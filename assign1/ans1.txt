@@ -1,0 +1,110 @@
+1. man -k [keyword]
+ this command will list any commands with keyword in their man page
+2. cp and wc are stored in the /usr/bin/ directory
+
+3. [ and w
+[ is the built in bash commands. w shows who is logged on
+ and what they are doing 
+
+4. /usr/bin/emacs actually executes the file /usr/bin/emacs-24.3  
+
+5. g+s,o-x sets the group ID of newly created files in the directory and takes
+ away the execution permissions of others
+
+6. find -ctime -21
+ctime test searches for files modified within the past 21 days
+ when used with -21
+
+7. Files modified in the last three weeks under ~/
+.
+./Desktop
+./Desktop/desktop.ini
+./Desktop/$RECYCLE.BIN
+./Desktop/Google Chrome.lnk
+./Documents
+./Documents/$RECYCLE.BIN
+./Documents/desktop.ini
+./Downloads
+./Downloads/desktop.ini
+./Downloads/$RECYCLE.BIN
+./.viminfo
+./testing
+./testing/a.txt
+./testing/b.txt
+./.ssh/known_hosts
+./.Xauthority
+./ans1.txt
+./.cache/abrt
+./.cache/abrt/lastnotification
+./pastLabs
+./pastLabs/attacklab
+./pastLabs/bomblab
+./pastLabs/lab4_handout
+./pastLabs/cs33jc
+
+8. ls -a1 --file-type /usr/bin/ | grep '@' > symlink.txt; wc -l symlink.txt
+  the command will list all the files in the /usr/bin/ with an @ appended 
+  to symlinks. this output is passed to grep, which searchs for words with the
+  @ char. The words are stored in a txt file with one word per line. wc then
+  outputs the number of lines (words) in the file. 
+
+9. ls -lt /usr/lib
+   the oldest regular in /usr/lib is gcc
+
+10. man locale
+  the command locale gets its data from the current locale environment,
+  or all public locales, and it summarizes the current locale environment for
+  each locale category as determined by the settings of the environment
+  variables defined in the base definitions volume of IEEE std 1003.1-2001
+  chapter 7 locale
+
+11. emacs
+C-h
+a
+sort
+
+the commands are:
+Buffer-menu-sort
+sort-columns
+sort-fields
+sort-lines
+sort-numeric-fields
+sort-pages
+sort-paragraphs
+sort-regexp-fields
+tabulated-list-col-sort
+tabulated-list-sort
+
+12. emacs
+C-h
+b
+C-x
+o
+
+descriptions below:
+C-a	move-beginning-of-line
+C-b	backward-char
+C-c	mode-specific-command-prefix
+C-d	delete-char
+C-e	move-end-of-line
+C-f	forward-char
+C-g	keyboard-quit
+C-h	help-command
+
+
+13. C-g cancels or exits the current command
+
+14. emacs
+C-h
+d
+yank
+
+yank reinserts the last stretch of killed text. aka it pastes things.
+
+15. ls -l list all visible files. (not including hidden files such as . and ..)
+
+the emacs dired cmd, C-x d /usr/bin/, shows all files in the directory,
+ including . and .. (hidden files)
+
+
+

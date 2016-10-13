@@ -1,0 +1,41 @@
+#! /bin/bash
+
+cd $1
+
+sortedCksums=$(mktemp)
+{ cksum * & cksum .*; } 2>/dev/null | sort -nf 1>$sortedCksums
+sed -i 's:.* ::g' $sortedCksums
+
+declare -a filesToCheck
+let i=0
+for fileName in $( cat $sortedCksums)
+do
+  if [ -f $fileName ] && [ ! -L $fileName ]
+  then
+    if [ ! -r $fileName ]
+    then
+      echo "$fileName is not readable. Skipping.\n"
+    fi
+    filesToCheck[$i]=$fileName
+  fi
+  ((i++))
+done
+
+let j=0;
+for fileName in "${filesToCheck[@]}"
+do
+  if [[ $j -eq 0 ]]
+  then
+    ((j++))
+    echo "$j"
+    continue
+  fi
+
+  compFile=$fileName
+  master=${filesToCheck[$j-1]}
+  if cmp -s $master $compFile
+    then
+      ( rm ./"$compFile" && ln ./"$master" ./"$compFile" );
+  fi
+  ((j++)) 
+done

@@ -1,0 +1,199 @@
+lab2.log
+
+checked the locale, with 'locale'. It wasn't C or POSIX, so changed
+it to C using 'export LC_ALL='C''. Locale then reported the correct LC_CTYPE.
+
+Created a sorted 'words' file in my working directory ~/cs35l/assign2/. Ran
+the command 'sort -o words /usr/share/dict/words'
+
+tr -c 'A-Za-z' '[\n*]' < assign2.html
+This replaces any character that is not in a letter with a new line
+
+tr -cs 'A-Za-z' '[\n*]' < assign2.html
+This does the same as the previous command, but only keeps one new line
+character in a row.
+
+tr -cs 'A-Za-z' '[\n*]' | sort  < assign.html
+This still limits the new lines to one consecutive and also sorts the words on
+each line.
+
+tr -cs 'A-Za-z' '[\n*]' | sort -u < assign.html 
+Keeps the first of an equal run. 
+A
+A
+A
+turns into just 
+A
+
+tr -cs 'A-Za-z' '[\n*]' | sort -u | comm - words < assign.html
+outputs three columns. Column one is the lines unique to assign2.html
+column 2 is the lines unique to words. column 3 contains lines in both files
+
+tr -cs 'A-Za-z' '[\n*]' | sort -u | comm -23 - words < assign.html
+only outputs column 1 from above
+
+
+sed 's/<td><\/td>//g' hwnwdseng.htm | grep "<td>.*</td>"
+gets rid of blank table entries and then only keeps lines with <td> at the 
+beginning and </td> at the end. The remaining list is Eword, hword, eword, 
+hword, etc
+
+sed 's/<td><\/td>//g' hwnwdseng.htm | grep "<td>.*</td>" | awk 'NR%2==0'
+prints out only the even lines of the output from the above command. 
+the output now contains all the Hawaiian entries with html tags
+
+sed 's/<td><\/td>//g' hwnwdseng.htm | grep "<td>.*</td>" | awk 'NR%2==0'
+> | sed 's:<[^>]*>::g'
+removes all html tags, leaving only the hawaiian words
+
+sed 's/<td><\/td>//g' hwnwdseng.htm | grep "<td>.*</td>" | awk 'NR%2==0' \
+| sed -e 's:<[^>]*>::g' -e 's:\x60:\x27:g'
+replaces the grave accent (hex 60) with an apostrophe (hex 27)
+
+sed 's:<td></td>::g' hwnwdseng.htm | grep "<td>.*</td>" | awk 'NR%2==0' \
+| tr '[:upper:]' '[:lower:]' | sed -e 's:<[^>]*>::g' -e 's:\x60:\x27:g' \
+| tr -s ',[:blank:]' '\n' | tr -d '?' 
+makes all characters lowercase, gets rid of the ?, and inserts a new line
+where there is a space or comma
+
+sed 's:<td></td>::g' hwnwdseng.htm | grep "<td>.*</td>" | awk 'NR%2==0' \
+| tr '[:upper:]' '[:lower:]' | sed -e 's:<[^>]*>::g' -e 's:\x60:\x27:g' \
+| tr -s ',[:blank:]' '\n' | tr -d '?' | sort -u
+sorts the remaining words
+
+sed 's:<td></td>::g' hwnwdseng.htm | grep "<td>.*</td>" | awk 'NR%2==0' \
+| tr '[:upper:]' '[:lower:]' | sed -e 's:<[^>]*>::g' -e 's:\x60:\x27:g' \
+| tr -s ',[:blank:]' '\n' | tr -d '?' | sed -e 's:.*[^pkmnwlhaeiou\x27].*::' \
+ -e '/^$/d' | sort -u
+gets rid of any lines containing non hawaiian characters. the sort is moved
+after this check to get rid of any new lines created from the deleted entries
+the second sed command also gets rid of empty lines
+
+the final script replaces with hwnwdseng.htm filename with $1 to take in the 
+first argument as its input, shown below:
+
+sed 's:<td></td>::g' $1 | grep "<td>.*</td>" | awk 'NR%2==0' \
+| tr '[:upper:]' '[:lower:]' | sed -e 's:<[^>]*>::g' -e 's:\x60:\x27:g' \
+| tr -s ',[:blank:]' '\n' | tr -d '?' | sed -e 's:.*[^pkmnwlhaeiou\x27].*::' \
+ -e '/^$/d' | sort -u 
+
+Modify the last shell command
+tr -cs 'A-Za-z' '[\n*]' | sort -u | tr '[:upper:]' '[:lower:]' \
+| comm -23 - hwords
+
+
+cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | sort -u | \
+tr '[:upper:]' '[:lower:]' | comm -23 - hwords | wc -l
+OUTPUT: 449 lines. which means there were 449 words that are misspelled 
+according to the Hawaiian dictionary in hwords.
+
+cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | sort -u | \
+tr '[:upper:]' '[:lower:]' | comm -23 - words | wc -l
+OUTPUT: 76 lines. 76 words were not in the dictionary in the words file.
+
+halau and wiki were misspelled according to the english dict but not the 
+hawaiian one. 
+able, assume, list and log are all misspelled according to the hawaiian
+dictionary but not the english one. 
+
+PART 2:
+created a directory with many random files I populated with text.
+some were unique, others had the same content, but with different names
+Included duplicate files with uppercase and lowercase names and names
+beginning with '.'
+
+To help identify which files are the same I ran cksum on the whole directory
+Two runs are needed to include the files that start with '.' since
+it doesn't include those by default when run with '*'
+
+#! /bin/bash
+
+
+cd $1
+
+
+sortedCksums=$(mktemp)
+{ cksum * & cksum .*; } 2>/dev/null | sort -nf 1> $someTMPfile
+sed -i 's:.* ::g' $sortedCksums
+
+The cksums are run and both STD outs are sent through the pipe.
+the STDERR is rerouted to /dev/null to keep out messages about . and ..
+sort orders the cksums and file names by cksum number first and then by
+file name ( . first, A next, a after, B, b, C, c, etc). only the last
+column with file names is saved
+
+
+declare -a filesToCheck
+
+let i=0
+
+for fileName in $( cat $sortedCksums)
+
+do
+  
+  if [ -f $fileName ] && [ ! -L $fileName ]
+  
+    then
+
+    if [ ! -r $fileName ]
+
+    then
+
+      echo "$fileName is not readable. Skipping.\n"
+
+    fi
+
+    filesToCheck[$i]=$fileName
+
+  fi
+  
+  ((i++))
+
+done
+
+The for loop does a check on each of the filenames listed in sortedCksums
+to make sure they are regualr files, readable and not links. Then, puts
+them into an array
+
+
+let j=0;
+
+for fileName in "${filesToCheck[@]}"
+
+do
+
+  if [[ $j -eq 0 ]]
+
+  then
+
+    ((j++))
+
+    echo "$j"
+
+    continue
+
+  fi
+
+
+  compFile=$fileName
+
+  master=${filesToCheck[$j-1]}
+
+  if cmp -s $master $compFile
+
+    then
+
+      ( rm ./"$compFile" && ln ./"$master" ./"$compFile" );
+
+  fi
+
+  ((j++))
+
+done
+
+The for loop checks a file in the array with the previous array entry.
+if they are the same, the file is deleted and then linked to the 
+previous file name. 
+
+
+

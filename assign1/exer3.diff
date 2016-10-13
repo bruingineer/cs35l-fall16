@@ -1,0 +1,36 @@
+--- exer1.html	2016-09-30 19:20:10.860733000 -0700
++++ exer3.html	2016-09-30 19:59:19.824646000 -0700
+@@ -3,13 +3,13 @@
+ 	"http://www.w3.org/TR/html4/strict.dtd">
+ <html>
+ <head>
+-<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'>
+-<title>Assignment 1. Getting to know your system</title>
++<meta http-equiv='Content-Type' content='text/html;charset=US-ASCII'>
++<title>Assignment 37. Getting to know your system</title>
+ </head>
+ 
+ <body>
+ 
+-<h1>Assignment 1. Getting to know your system</h1>
++<h1>Assignment 37. Getting to know your system</h1>
+ 
+ <p><small>[<a href='../index.html'>35L home</a> &gt; <a href='../assign.html'>assignments</a>]</small></p>
+ 
+@@ -86,6 +86,7 @@
+ When looking at the directory <samp>/usr/bin</samp>, what's the
+ difference between the output of the <samp>ls -l</samp> command,
+ and the directory listing of the Emacs <samp>dired</samp> command?</li>
++
+ </ol>
+ 
+ <h2>Homework: Learning to use Emacs</h2>
+@@ -175,7 +176,7 @@
+ <li>Use Emacs to edit the file <samp>exer3.html</samp>.</li>
+ 
+ <li>Change the first two instances of "Assignment 1" to "Assignment 37".</li>
+-<li>Change the first instance of "UTF-8" to "US-ASCII".</li>
++<li>Change the first instance of "US-ASCII" to "US-ASCII".</li>
+ <li>Insert a blank line before the first line containing
+ "<samp>&lt;/ol&gt;</samp>".</li>
+ 
