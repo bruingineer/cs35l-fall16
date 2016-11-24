@@ -1,0 +1,129 @@
+lab5 camarena
+
+downloaded coreutils and put them into my working dir. I then ran
+$ tar -xvf coreutils-with-bug.tar.gz
+to unzip the contents.  Then configured, made the utils
+$ ./configure \
+--prefix=/u/ee/ugrad/camarena/cs35l-fall16/5assign/coreutils-buggy-install
+
+$ make
+
+The make command returned the following error.
+
+In file included from utimecmp.c:41:0:
+utimens.h:2:5: error: conflicting types for 'futimens'
+ int futimens (int, char const *, struct timespec const [2]);
+     ^
+In file included from utimecmp.h:25:0,
+                 from utimecmp.c:25:
+/usr/include/sys/stat.h:373:12: note: previous declaration of 'futimens' was here
+ extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
+            ^
+
+Downloaded the patch and applied it.
+$ wget http://web.cs.ucla.edu/classes/fall16/cs35L/assign/coreutils.diff
+editted the patch file then applied it
+$ patch -p0 < coreutils.diff
+
+re-compiled the coreutils, this time with no errors
+$ make
+$ make install
+
+made a test dir
+$ tmp=$(mktemp -d)
+$ cd $tmp
+$ touch -d '1918-11-11 11:00 GMT' wwi-armistice
+$ touch now
+$ sleep 1 
+$ touch now1
+$ TZ=UTC0 ~/cs35l-fall16/5assign/coreutils-buggy-install/bin/ls -lt\
+  --full-time wwi-armistice now now1
+-rw-r--r-- 1 camarena eeugrad 0 1918-11-11 11:00:00.000000000 +0000 wwi-armistice
+-rw-r--r-- 1 camarena eeugrad 0 2016-10-31 05:27:18.075743003 +0000 now1
+-rw-r--r-- 1 camarena eeugrad 0 2016-10-31 05:27:07.238454982 +0000 now
+$ cd
+
+This is the expected output but it needs to be fixed.
+
+$ cd ~/cs35l-fall16/5assign
+$ gdb ./coreutils-buggy-install/bin/ls
+(gdb) b main
+(gdb) run -lt ./times/
+
+open ls.c in separate window. Searching for 'time', i found
+a function called cmp_ctime. 
+
+(gdb) b ls.c:cmp_ctime
+the funciton wasn't found in ls.c
+so i recompiled coreutils.
+
+(gdb) quit
+cd coreutils-with-bug
+$ make clean
+$ ./configure CFLAGS="-O0 -g" --prefix="/u/ee/ugrad/camarena/cs35l-fall16/\
+>5assign/coreutils-buggy-install"
+$ make
+$ cd $tmp
+
+$ gdb ~/cs35l-fall16/5assign/coreutils-buggy-install/bin/ls
+(gdb) b ls.c:cmp_ctime
+   gdb said it wasn't defined in ls.c
+   I looked through ls.c again and found another cmp_mtime
+(gdb) b ls.c:compare_mtime
+   this time it worked
+(gdb) run -lt
+   it reached the breakpoint and was in the file timespec.h
+
+using s, i stepped through the code. It called a function where a difference
+in the time between two files was found.
+timespec_cmp (struct timespec a, struct timespec b)
+
+this in in timespec.h, line 45. It contains a subtraction of two ints,
+which would cause an overflow for a 32bit int. 
+
+$ cd ~/cs35l-fall16/5assign/coreutils-with-bug/lib/
+$ emacs timespec.h
+   edit the code around the function on line 45 to account for overflow.
+
+$ cd .. 
+$ make distclean
+   remove extraneous files
+$ mv coreutils.diff ../
+$ cd .. 
+
+$ mv coreutils-with-bug coreutils-fixed
+  rename the fixed coreutils
+
+$ tar -xvf coreutils-with-bug.tar.gz
+  extract the old buggy coreutils again
+
+$ mv coreutils.diff coreutils-with-bug/; cd coreutils-with-bug
+$ patch -p0 < coreutils.diff
+  applies the compile patch again
+
+$ cd .. 
+$ diff -pru  coreutils-with-bug coreutil-fixed > lab5.diff
+  create the patch file and then manually removed changes created automatically
+  for example, the entries for tee.1 and touch.1
+
+
+TESTING ON SEASNET HOME DIR
+$ cd ~/cs35l-fall16/5assign/times
+$ touch -d '1918-11-11 11:00 GMT' wwi-armistice
+$ touch now
+$sleep 1
+$ touch now1
+  made test dir
+
+$ TZ=UTC0 ls -lt --full-time wwi-armistice now now1
+-rw-r--r-- 1 camarena eeugrad 0 2054-12-17 17:28:16.000000000 +0000 wwi-armistice
+-rw-r--r-- 1 camarena eeugrad 0 2016-10-31 07:36:34.903152000 +0000 now1
+-rw-r--r-- 1 camarena eeugrad 0 2016-10-31 07:36:29.346883000 +0000 now
+$ df -T
+  the order is wrong and df -T shows the mounted drive and their filesystems
+
+the home directory is on a drive with the NFS file systems, while tmp is on 
+a drive that uses the ext4 file system. NFS uses unsigned 32-bit integers to 
+store the timestamps in seconds relative to the Unix epoch (1970-01-01), 
+but ext4 uses signed 32-bit integers.  Since 1918 is before the epoch, the date
+is repeesented by a negative number on the linux server. The H

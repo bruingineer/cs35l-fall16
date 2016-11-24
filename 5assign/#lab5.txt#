@@ -1,0 +1,19 @@
+lab5 camarena
+
+downloaded coreutils and put them into my working dir. I then ran
+$ tar -xvf coreutils-with-bug.tar.gz
+to unzip the contents.  Then configured, made and installed the utils
+$ ./configure \
+--prefix="/u/ee/ugrad/camarena/cs35l-fall16/5assign/coreutils-buggy-install"
+$ make
+then mv -f ".deps/utimecmp.Tpo" ".deps/utimecmp.Po"; else rm -f ".deps/utimecmp.Tpo"; exit 1; fi
+In file included from utimecmp.c:41:0:
+utimens.h:2:5: error: conflicting types for 'futimens'
+ int futimens (int, char const *, struct timespec const [2]);
+     ^
+In file included from utimecmp.h:25:0,
+                 from utimecmp.c:25:
+/usr/include/sys/stat.h:373:12: note: previous declaration of 'futimens' was here
+ extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
+            ^
+

@@ -1,0 +1,61 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(int argc, char *argv[])
+{
+  fprintf(stdout, "HI\n");
+  if (argc != 3) {
+    fprintf(stderr, "Incorrect amount of arguments. Provide only two.\n");
+    exit(1);
+  }
+  
+  char *from = argv[1];
+  char *to = argv[2];
+  printf("after from to");
+  // check lengths
+  int length_check_index = 0;
+  for(; from[length_check_index] != 0 && to[length_check_index] != 0; length_check_index++)
+    printf("length check");
+  if (from[length_check_index] != 0 || to[length_check_index] != 0) {
+    fprintf(stderr, "To and From must be equal lengths.\n");
+    exit(1);
+  }
+  printf("after length check");
+  // check dups in from
+  int first_dup_index = 0;
+  for(; from[first_dup_index] != 0; first_dup_index++) {
+    int second_dup_index = first_dup_index + 1;
+    for(; from[second_dup_index] != 0; second_dup_index++) {
+      printf("\ninside duplicate check\n");
+      if (from[first_dup_index] == from[second_dup_index]) {
+	fprintf(stderr, "First arg must have no duplicate chars.\n");
+	exit(1);
+      }
+    }
+  }
+
+  int ch;
+
+  while((ch = getchar()) != EOF) {
+    
+    int index;
+    for (index = 0; from[index] != 0; index++) {
+      if (ch == from[index]) {
+	ch = to[index];
+	break;
+      }
+    }
+
+    if (putchar(ch) == EOF) {
+      fprintf(stderr, "Error while writing char.\n");
+      exit(1);
+    }
+  }
+	
+  if (ferror(stdin)) {
+    fprintf(stderr, "Error while reading character.\n");
+    exit(1);
+  }
+
+  exit(0);
+}

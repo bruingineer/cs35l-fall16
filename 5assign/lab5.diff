@@ -1,0 +1,43 @@
+Only in coreutils-with-bug: coreutils.diff
+diff -pru coreutils-with-bug/lib/ChangeLog coreutils-fixed/lib/ChangeLog
+--- coreutils-with-bug/lib/ChangeLog	2005-11-02 04:16:55.000000000 -0800
++++ coreutils-fixed/lib/ChangeLog	2016-10-30 23:45:53.936258000 -0700
+@@ -1,3 +1,8 @@
++2016-10-30  Joshua Gabriel John Camarena  <camarena@lnxsrv07.seas.ucla.edu>
++
++	* timespec.h: added an overflow fix when using ls on files with
++	very big time differences
++
+ 2005-11-01  Paul Eggert  <eggert@cs.ucla.edu>
+ 
+ 	* posixtm.h (PDS_PRE_2000): New macro.
+Only in coreutils-fixed/lib: ChangeLog~
+diff -pru coreutils-with-bug/lib/timespec.h coreutils-fixed/lib/timespec.h
+--- coreutils-with-bug/lib/timespec.h	2005-09-21 23:05:39.000000000 -0700
++++ coreutils-fixed/lib/timespec.h	2016-10-31 00:26:54.839408000 -0700
+@@ -19,6 +19,7 @@
+ #if ! defined TIMESPEC_H
+ # define TIMESPEC_H
+ 
++# include <limits.h>
+ # include <sys/types.h>
+ # if TIME_WITH_SYS_TIME
+ #  include <sys/time.h>
+@@ -45,7 +46,15 @@ struct timespec
+ static inline int
+ timespec_cmp (struct timespec a, struct timespec b)
+ {
+-  int diff = a.tv_sec - b.tv_sec;
++  long ldiff = a.tv_sec - b.tv_sec;
++  int diff = 0;
++  if (ldiff > INT_MAX)
++    diff = INT_MAX;
++  else if (ldiff < INT_MIN)
++    diff = INT_MIN;
++  else
++    diff = a.tv_sec - b.tv_sec;
++
+   return diff ? diff : a.tv_nsec - b.tv_nsec;
+ }
+ 
+Only in coreutils-fixed/lib: timespec.h~

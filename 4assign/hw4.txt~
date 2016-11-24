@@ -1,0 +1,45 @@
+hw4.txt
+
+git checkout v3.0 -b quote
+    makes new branch named quote
+
+patch -p1 < quote-3.0-patch.txt
+    Patches the files:
+    cmp.c, diff.c, diff3.c, dir.c, sdiff.c, util.c
+
+emacs RET C-h k C-x 4 a
+    opens the help for the command add-change-log-entry-other-window
+
+open each patched .c file and press C-x 4 a to generate a changelog
+entry for it
+
+git add .
+git commit -a -F ChangeLog
+    add the modified files in the current dir to the stage
+    use the changelog as the commit message
+
+git format-patch -1 --stdout > formatted-patch.txt
+    makes a patch from the last commit
+
+**partner test
+git checkout v3.0 -b partner
+git am < partner-patch.txt
+make
+
+    make a new version using partner's patch and also shows the
+    fix when running diff . - and diff --help
+
+make distdir
+    builds a new diffutils in a new directory, named 
+
+ cd diffutils-3.0.1-711a
+ less ChangeLog
+    shows the newest commit message
+
+ssh -X camarena@lnxsrv.seas.ucla.edu
+export PATH=$PATH:/usr/local/cs/bin
+cd ~eggert/src/gnu/emacs
+gitk
+
+    runs gitk while in the emacs dirctory
+    moved down to the last merge on 2016-

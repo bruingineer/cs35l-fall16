@@ -1,0 +1,132 @@
+Lab4.txt
+
+cd ~/cs35l-fall16/4assign; git clone ~eggert/src/gnu/diffutils
+    clone the repo to a repo in my working dir
+
+cd dfifutils
+git log > ../git-log.txt
+    put the log entries into a file
+
+git tag > ../git-tags.txt
+    put tags into file
+
+git log --grep="maint: quote"
+    find the commit with "maint: quote" in title
+    the hash is 62ca21c8c1a5aa3488589dcb191a4ef04ae9ed4f
+
+git format-patch -1 --stdout 62ca21c8c1a5aa3488589dcb191a4ef04ae9ed4f \
+> quote-patch.txt
+    makes a patch for the text in quote-patch.txt
+
+git tag
+    shows list of tags, we are looking for 3.0
+
+git checkout v3.0 -b v30branch
+    moves the HEAD to the commit of v3.0 and makes a new branch
+
+patch -p < quote-patch.txt
+    applies the patch
+
+Problems with patching:
+***
+    can't find file to patch at input line 62 (HACKING)
+    patching file README
+    Hunk #1 FAILED at 9.
+    Hunk #3 FAILED at 60.
+    2 out of 3 hunks FAILED -- saving rejects to file README.rej
+    patching file README-hacking
+    Hunk #1 FAILED at 19.
+    1 out of 1 hunk FAILED -- saving rejects to file README-hacking.rej
+    patching file cfg.mk
+    Hunk #1 FAILED at 29.
+    1 out of 1 hunk FAILED -- saving rejects to file cfg.mk.rej
+    patching file doc/diagmeet.note
+    can't find file to patch at input line 249 (doc/diffutils.texi)
+    can't find file to patch at input line 262 (man/help2man)
+    patching file src/diff.c
+    Hunk #10 FAILED at 876.
+    Hunk #11 FAILED at 906.
+    Hunk #12 FAILED at 942.
+    3 out of 14 hunks FAILED -- saving rejects to file src/diff.c.rej
+    patching file src/diff3.c
+    Hunk #6 FAILED at 433.
+    1 out of 9 hunks FAILED -- saving rejects to file src/diff3.c.rej
+***
+
+git status
+    output:
+# On branch v30branch
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#       modified:   NEWS
+#       modified:   README
+#       modified:   TODO
+#       modified:   doc/diagmeet.note
+#       modified:   ms/config.bat
+#       modified:   ms/config.site
+#       modified:   po/en.po
+#       modified:   src/analyze.c
+#       modified:   src/cmp.c
+#       modified:   src/context.c
+#       modified:   src/diff.c
+#       modified:   src/diff.h
+#       modified:   src/diff3.c
+#       modified:   src/dir.c
+#       modified:   src/ifdef.c
+#       modified:   src/io.c
+#       modified:   src/sdiff.c
+#       modified:   src/side.c
+#       modified:   src/system.h
+#       modified:   src/util.c
+#       modified:   tests/help-version
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#       NEWS.orig
+#       README-hacking.orig
+#       README-hacking.rej
+#       README.orig
+#       README.rej
+#       cfg.mk.orig
+#       cfg.mk.rej
+#       grep
+#       ms/config.site.orig
+#       src/cmp.c.orig
+#       src/context.c.orig
+#       src/diff.c.orig
+#       src/diff.c.rej
+#       src/diff.h.orig
+#       src/diff3.c.orig
+#       src/diff3.c.rej
+#       src/dir.c.orig
+#       src/sdiff.c.orig
+#       src/system.h.orig
+#       src/util.c.orig
+#       tests/help-version.orig
+no changes added to commit (use "git add" and/or "git commit -a")
+
+open emacs, "C-h k C-x v =" to see help about vc-diff
+    C-h k C-x v u for help about vc-revert
+
+using git status, I looked at the modified files list.
+To revert non .c files, I opened each in emacs and used the following
+C-x v = RET C-x v u RET yes RET
+
+I then manually went through each .c file to revert the changes made
+to comments.
+  emacs "file" RET C-x v = M-n C-c C-r
+if the Hunk was in a comment I take the edit back with 
+C-c C-a
+if not then I used, M-n to move on
+
+I had to manually apply some changes in the .rej files
+
+./bootstrap
+./configure
+make
+  These built the diffutils dir, cd into diffutils/src and
+  now diff . - and ./diff --help output normal '.
+

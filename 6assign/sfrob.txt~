@@ -1,0 +1,53 @@
+performance compare:
+
+create test file with various line
+
+testA.txt 100 lines
+testB.txt 1000 lines
+testC.txt 10000 lines
+testD.txt 100000 lines
+testE.txt 1000000 lines
+
+sfrobu
+time ./sfrobu < testD.txt
+real 0m0.137s
+user 0m0.041s
+sys 0m0.077s
+
+time ./sfrobu < testC.txt
+real 0m0.024s
+user 0m0.004s
+sys 0m0.008s
+
+
+original sfrob 
+time ./sfrob < testD.txt
+real    0m0.066s
+user    0m0.055s
+sys     0m0.006s
+
+time ./sfrob < testC.txt
+real    0m0.008s
+user    0m0.006s
+sys     0m0.000s
+
+sfrobu used less user time for the larger file, but took significantly more 
+system time than sfrob.
+
+***
+
+Comparisons done in sfrobu:
+testA.txt - 468
+testB.txt - 7431
+testC.txt - 96082
+testD.txt - 1198067
+testE.txt - 14458032
+
+estimate for comparisons in terms of lines inputted
+n*log2(n)=comparisons for n lines
+
+***
+
+Shell script
+sfrobs
+time ./sfrobs < testD.txt

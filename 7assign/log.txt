@@ -1,0 +1,41 @@
+lab.txt assign 7
+Josh Camarena
+
+export PATH=$PATH:/usr/local/cs/bin/
+get the most recent version of sort
+
+sort --version
+sort (GNU coreutils) 8.22
+
+od -t fD -An -N 80000000 /dev/urandom | tr ' ' '\n' | sed '/^$/d' > doubles.txt
+generate a file with 10 million double precision floating point numbers. one
+on each line.
+
+time -p sort -g doubles.txt > /dev/null
+real 51.83
+user 278.52
+sys 1.49
+
+time -p sort -g --parallel=1 doubles.txt > /dev/null
+real 268.91
+user 268.24
+sys 0.66
+
+time -p sort -g --parallel=2 doubles.txt > /dev/null
+real 139.48
+user 268.01
+sys 0.74
+
+time -p sort -g --parallel=4 doubles.txt > /dev/null
+real 79.02
+user 271.46
+sys 0.85
+
+time -p sort -g --parallel=8 doubles.txt > /dev/null
+real 49.47
+user 275.98
+sys 1.38
+
+sort runs much faster when parallelized. its default mode of operation seems 
+to be in parallel. the more threads used, the more user time it took because
+of incereased overhead, but the real times decreased a lot.

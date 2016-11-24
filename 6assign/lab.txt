@@ -1,0 +1,45 @@
+lab.txt
+1. check number of arguments provided
+check arguments for length and duplicates in the "from"
+while the char is not EOF
+    use getchar to read in ch
+    if ch matches a char in from   
+        replace it with the corresponding char in "to"
+    write the char with putchar
+    check for input output errors and exit
+    
+2. same pseudocode as above, using read and write instead of getchar & putchar
+
+3. compare times of unbuff and buff
+head --bytes=5000000 /dev/urandom > test2.txt
+   outputs 5000000 random bytes to test2.txt for testing
+   
+(a) copying a file to another
+strace -o strace_output_fb ./tr2b 'a' 'b' < test2.txt > fb.txt
+strace -o strace_output_fu ./tr2u 'a' 'b' < test2.txt > fu.txt
+
+(b) copying to terminal
+strace -o strace_output_tb ./tr2b 'a' 'b' < test2.txt
+strace -o strace_output_tu ./tr2u 'a' 'b' < test2.txt
+
+using the buffered tr, copying to another file uses fewer system calls
+than when writing to the terminal.  read and write process chunks of bytes
+at the same time, while only outputting the number of bytes specified.
+This chunk size is smaller when outputting to terminal, so it takes 
+more system calls.
+
+using the unbuffered tr, copying to another file and outputing to the terminal
+used similar amounts of system calls because both ways read and write one byte
+at a time, which makes the program slow. Both strace outputs had 10000026 lines.
+
+4. time ./tr2b 'a' 'b' < test2.txt
+real 0m0.182ss
+user 0m0.107s
+sys 0m0.008s
+
+time ./tr2u 'a' 'b' < test2.txt
+real 0m6.312s
+user 0m0.296s
+sys 0m5.948s
+
+using tr2u makes the run time significantly longer.

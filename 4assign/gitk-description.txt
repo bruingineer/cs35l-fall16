@@ -1,0 +1,6 @@
+top: a list of commits with the authors and times submitted
+     plus any branches of the commits
+
+left: commit messgae and changes to files in diff format
+
+right: file list of modified files in the commit

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+for i in `seq 0 255`;
+do 
+    var=$(($i^\052))
+    printf '\\%03o' $var >> sfrobs
+done
+
+printf '\'' >> sfrobs
+
+for i in `seq 0 255`;
+do
+    printf '\\%03o' $i >> sfrobs
+done
+
